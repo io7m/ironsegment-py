@@ -21,6 +21,7 @@ from ironsegment.binary1 import (
     FileReadableSection1End,
     FileReadableSection1Image,
     FileReadableSection1Manifest,
+    FileWritable,
 )
 from ironsegment.model import Manifest
 
@@ -43,3 +44,13 @@ class TestBinary1:
             assert isinstance(f.sections[2], FileReadableSection1Image)
             assert isinstance(f.sections[3], FileReadableSection1Image)
             assert isinstance(f.sections[4], FileReadableSection1End)
+
+    def test_open_write(self, tmpdir) -> None:
+        with FileReadable.open_file(resource_file("example-0.isb")) as f:
+            outfile = tmpdir + "/example-0.isb"
+            manifest = f.sections[0].manifest()
+            with FileWritable.open_file(outfile, manifest) as w:
+                assert len(w.writable_images) == 3
+                assert w.writable_images[0].data_offset == 1248
+                assert w.writable_images[1].data_offset == 2800
+                assert w.writable_images[2].data_offset == 3840

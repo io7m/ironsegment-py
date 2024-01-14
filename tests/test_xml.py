@@ -20,7 +20,12 @@ import pytest
 from lxml.etree import XMLSyntaxError
 
 from ironsegment.model import ImageSemantic
-from ironsegment.xml import parse_manifest, parse_manifest_text, schema_bytes
+from ironsegment.xml import (
+    parse_manifest,
+    parse_manifest_text,
+    schema_bytes,
+    serialize_manifest,
+)
 
 
 def resource(name: str) -> bytes:
@@ -60,11 +65,51 @@ class TestSchema:
         assert tree[2].tag == "{urn:com.io7m.ironsegment:manifest:1}Metadata"
 
     def test_parse_ok_1(self) -> None:
-        manifest = parse_manifest(resource("manifest0.xml"))
-        assert "Copyright" in manifest.metadata["com.io7m.license"]
-        assert manifest.images.width == 1024
-        assert manifest.images.height == 1024
-        assert manifest.images.images[1].semantic == ImageSemantic.DENOISE_RGB8
-        assert manifest.images.images[2].semantic == ImageSemantic.DEPTH_16
-        assert manifest.images.images[3].semantic == ImageSemantic.OBJECT_ID_32
-        assert manifest.objects[1].description == ""
+        manifest0 = parse_manifest(resource("manifest0.xml"))
+        assert "Copyright" in manifest0.metadata["com.io7m.license"]
+        assert manifest0.images.width == 1024
+        assert manifest0.images.height == 1024
+        assert manifest0.images.images[1].semantic == ImageSemantic.DENOISE_RGB8
+        assert manifest0.images.images[2].semantic == ImageSemantic.DEPTH_16
+        assert manifest0.images.images[3].semantic == ImageSemantic.OBJECT_ID_32
+        assert manifest0.objects[1].description == ""
+
+        manifest1 = parse_manifest(serialize_manifest(manifest0))
+        assert manifest0.metadata == manifest1.metadata
+
+        assert len(manifest0.objects) == len(manifest1.objects)
+        assert (
+            manifest0.objects[1].identifier.value
+            == manifest1.objects[1].identifier.value
+        )
+        assert (
+            manifest0.objects[1].description == manifest1.objects[1].description
+        )
+
+        assert manifest0.images.width == manifest1.images.width
+        assert manifest0.images.height == manifest1.images.height
+        assert len(manifest0.images.images) == len(manifest1.images.images)
+        assert (
+            manifest0.images.images[1].identifier.value
+            == manifest1.images.images[1].identifier.value
+        )
+        assert (
+            manifest0.images.images[1].semantic
+            == manifest1.images.images[1].semantic
+        )
+        assert (
+            manifest0.images.images[2].identifier.value
+            == manifest1.images.images[2].identifier.value
+        )
+        assert (
+            manifest0.images.images[2].semantic
+            == manifest1.images.images[2].semantic
+        )
+        assert (
+            manifest0.images.images[3].identifier.value
+            == manifest1.images.images[3].identifier.value
+        )
+        assert (
+            manifest0.images.images[3].semantic
+            == manifest1.images.images[3].semantic
+        )

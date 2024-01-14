@@ -15,12 +15,25 @@
 #
 
 
+from collections.abc import Mapping
 from importlib import resources as import_resources
 
 from lxml import etree
 from lxml.etree import XMLSchema, _Element
 
-from ironsegment.model import Image, ImageID, Images, ImageSemantic, Manifest, Object, ObjectID
+from ironsegment.model import (
+    Image,
+    ImageID,
+    Images,
+    ImageSemantic,
+    Manifest,
+    Object,
+    ObjectID,
+)
+
+NAMESPACE_1 = "urn:com.io7m.ironsegment:manifest:1"
+
+NS_MAP: Mapping[str, str] = {None: NAMESPACE_1}  # type: ignore
 
 
 def schema_bytes() -> bytes:
@@ -65,3 +78,45 @@ def parse_manifest(text: bytes) -> Manifest:
         metadata[meta_name] = meta_text
 
     return Manifest(Images(width, height, images), objects, metadata)
+
+
+def serialize_manifest(manifest: Manifest) -> bytes:
+    root = etree.Element("Manifest", nsmap=NS_MAP)
+
+    images = etree.Element(
+        "Images",
+        nsmap=NS_MAP,
+        Width=str(manifest.images.width),
+        Height=str(manifest.images.height),
+    )
+    root.append(images)
+
+    for iid in sorted(manifest.images.images):
+        image = manifest.images.images[iid]
+        images.append(
+            etree.Element(
+                "Image",
+                nsmap=NS_MAP,
+                ID=str(image.identifier.value),
+                Semantic=image.semantic.name,
+            )
+        )
+
+    objects = etree.Element("Objects", nsmap=NS_MAP)
+    for oid in sorted(manifest.objects):
+        object_value = manifest.objects[oid]
+        e = etree.Element(
+            "Object", nsmap=NS_MAP, ID=str(object_value.identifier.value)
+        )
+        e.text = object_value.description
+        objects.append(e)
+    root.append(objects)
+
+    metadata = etree.Element("Metadata", nsmap=NS_MAP)
+    for name in sorted(manifest.metadata):
+        e = etree.Element("Meta", nsmap=NS_MAP, Name=name)
+        e.text = manifest.metadata[name]
+        metadata.append(e)
+
+    root.append(metadata)
+    return etree.tostring(root)

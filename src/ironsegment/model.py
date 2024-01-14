@@ -63,6 +63,26 @@ class ImageSemantic(Enum):
     OBJECT_ID_32 = 7
 
 
+def pixel_size_for_semantic(semantic: ImageSemantic) -> int:
+    match semantic:
+        case ImageSemantic.DENOISE_RGB16:
+            return 3 * 2
+        case ImageSemantic.DENOISE_RGB8:
+            return 3
+        case ImageSemantic.DENOISE_RGBA8:
+            return 4
+        case ImageSemantic.DENOISE_RGBA16:
+            return 4 * 2
+        case ImageSemantic.DEPTH_16:
+            return 2
+        case ImageSemantic.DEPTH_32:
+            return 4
+        case ImageSemantic.MONOCHROME_LINES_8:
+            return 1
+        case ImageSemantic.OBJECT_ID_32:
+            return 4
+
+
 class Image:
     _identifier: ImageID
     _semantic: ImageSemantic
@@ -125,7 +145,12 @@ class Manifest:
     _objects: Mapping[int, Object]
     _metadata: Mapping[str, str]
 
-    def __init__(self, images: Images, objects: Mapping[int, Object], metadata: Mapping[str, str]):
+    def __init__(
+        self,
+        images: Images,
+        objects: Mapping[int, Object],
+        metadata: Mapping[str, str],
+    ):
         self._images = images
         self._objects = objects
         self._metadata = metadata

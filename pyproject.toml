@@ -110,6 +110,10 @@ warn_unused_ignores = true
 # The file takes ownership
 "src/ironsegment/binary1.py" = ["SIM115"]
 
+[tool.ruff]
+line-length = 80
+indent-width = 4
+
 #------------------------------------------------------------------------
 # Test suite.
 #
