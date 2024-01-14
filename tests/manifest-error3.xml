@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<i:Manifest xmlns:i="urn:com.io7m.ironsegment:manifest:1">
+  <i:Images Width="1024"
+            Height="1024">
+    <i:Image ID="1"
+             Semantic="DENOISE_RGB8"/>
+    <i:Image ID="2"
+             Semantic="DEPTH_16"/>
+    <i:Image ID="3"
+             Semantic="OBJECT_ID_32"/>
+  </i:Images>
+  <i:Objects>
+    <i:Object ID="1"/>
+  </i:Objects>
+  <i:Metadata>
+    <i:Meta Name="com.io7m.license">&#x0000;</i:Meta>
+  </i:Metadata>
+</i:Manifest>

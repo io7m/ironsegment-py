@@ -1,0 +1,141 @@
+#
+# Copyright © 2024 Mark Raynsford <code@io7m.com> https://www.io7m.com
+#
+# Permission to use, copy, modify, and/or distribute this software for any
+# purpose with or without fee is hereby granted, provided that the above
+# copyright notice and this permission notice appear in all copies.
+#
+# THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+# WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+# MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY
+# SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+# WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+# ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR
+# IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+#
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+#------------------------------------------------------------------------
+# Project metdata
+#
+
+[project]
+name = "ironsegment"
+version = "0.0.1"
+description = 'Semantically tagged image format.'
+readme = "README.md"
+requires-python = ">=3.10"
+license = "ISC"
+keywords = []
+authors = [
+  { name = "Mark Raynsford", email = "code@io7m.com" },
+]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Programming Language :: Python",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: Implementation :: CPython",
+  "Programming Language :: Python :: Implementation :: PyPy",
+]
+dependencies = [
+  "lxml==5.1.0"
+]
+
+[project.urls]
+Documentation = "https://www.github.com/io7m/ironsegment-py/#readme"
+Issues = "https://www.github.com/io7m/ironsegment-py/issues"
+Source = "https://www.github.com/io7m/ironsegment-py"
+
+#------------------------------------------------------------------------
+# Hatch configuration
+#
+
+[tool.hatch.version]
+path = "src/ironsegment/__about__.py"
+
+[tool.hatch.envs.default]
+dependencies = [
+  "coverage[toml] == 7.4.0",
+  "pytest == 7.4.4",
+]
+
+[tool.hatch.envs.default.scripts]
+test = "pytest {args:tests}"
+test-cov = "coverage run -m pytest {args:tests}"
+cov-report = [
+  "- coverage combine",
+  "coverage report",
+]
+cov = [
+  "test-cov",
+  "cov-report",
+]
+
+[[tool.hatch.envs.all.matrix]]
+python = ["3.10", "3.11", "3.12"]
+
+#------------------------------------------------------------------------
+# Type checking.
+#
+
+[tool.hatch.envs.types]
+dependencies = [
+  "mypy == 1.8.0",
+]
+[tool.hatch.envs.types.scripts]
+check = "mypy --install-types --non-interactive {args:src/ironsegment}"
+
+[tool.mypy]
+strict = true
+check_untyped_defs = true
+disallow_any_unimported = true
+disallow_untyped_defs = true
+no_implicit_optional = true
+show_error_codes = true
+warn_return_any = true
+warn_unused_ignores = true
+
+#------------------------------------------------------------------------
+# Static analysis.
+#
+
+[tool.ruff.lint.extend-per-file-ignores]
+# We set up lxml "safely"
+"src/ironsegment/xml.py" = ["S320"]
+
+#------------------------------------------------------------------------
+# Test suite.
+#
+
+[tool.pytest.ini_options]
+addopts = [
+  "--import-mode=importlib",
+]
+
+#------------------------------------------------------------------------
+# Code coverage.
+#
+
+[tool.coverage.run]
+source_pkgs = ["ironsegment", "tests"]
+branch = true
+parallel = true
+omit = [
+  "src/ironsegment/__about__.py",
+]
+
+[tool.coverage.paths]
+ironsegment = ["src/ironsegment"]
+tests = ["tests"]
+
+[tool.coverage.report]
+exclude_lines = [
+  "no cov",
+  "if __name__ == .__main__.:",
+  "if TYPE_CHECKING:",
+]

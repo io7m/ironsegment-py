@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            xmlns:i="urn:com.io7m.ironsegment:manifest:1"
+            targetNamespace="urn:com.io7m.ironsegment:manifest:1">
+
+  <xsd:simpleType name="QualifiedNameType">
+    <xsd:restriction base="xsd:string">
+      <xsd:pattern value="([a-z][a-z0-9_-]{0,63})(\.[a-z][a-z0-9_-]{0,62}){0,15}"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:simpleType name="ObjectIDType">
+    <xsd:restriction base="xsd:unsignedInt">
+      <xsd:minInclusive value="1"/>
+      <xsd:maxInclusive value="4294967295"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:simpleType name="ImageIDType">
+    <xsd:restriction base="xsd:unsignedInt">
+      <xsd:minInclusive value="1"/>
+      <xsd:maxInclusive value="4294967295"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:element name="Meta">
+    <xsd:complexType mixed="true">
+      <xsd:attribute name="Name"
+                     use="required"
+                     type="i:QualifiedNameType"/>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="Metadata">
+    <xsd:complexType>
+      <xsd:sequence minOccurs="0"
+                    maxOccurs="unbounded">
+        <xsd:element ref="i:Meta"/>
+      </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:key name="MetadataKeys">
+      <xsd:selector xpath="i:Meta"/>
+      <xsd:field xpath="@Name"/>
+    </xsd:key>
+  </xsd:element>
+
+  <xsd:element name="Object">
+    <xsd:complexType mixed="true">
+      <xsd:attribute name="ID"
+                     use="required"
+                     type="i:ObjectIDType"/>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="Objects">
+    <xsd:complexType>
+      <xsd:sequence minOccurs="0"
+                    maxOccurs="unbounded">
+        <xsd:element ref="i:Object"/>
+      </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:key name="ObjectKeys">
+      <xsd:selector xpath="i:Object"/>
+      <xsd:field xpath="@ID"/>
+    </xsd:key>
+  </xsd:element>
+
+  <xsd:simpleType name="ImageSemantic">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="DENOISE_RGB16"/>
+      <xsd:enumeration value="DENOISE_RGB8"/>
+      <xsd:enumeration value="DENOISE_RGBA16"/>
+      <xsd:enumeration value="DENOISE_RGBA8"/>
+      <xsd:enumeration value="DEPTH_16"/>
+      <xsd:enumeration value="DEPTH_32"/>
+      <xsd:enumeration value="MONOCHROME_LINES_8"/>
+      <xsd:enumeration value="OBJECT_ID_32"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:element name="Image">
+    <xsd:complexType>
+      <xsd:attribute name="ID"
+                     type="i:ImageIDType"
+                     use="required"/>
+      <xsd:attribute name="Semantic"
+                     type="i:ImageSemantic"
+                     use="required"/>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="Images">
+    <xsd:complexType>
+      <xsd:sequence minOccurs="0"
+                    maxOccurs="unbounded">
+        <xsd:element ref="i:Image"/>
+      </xsd:sequence>
+
+      <xsd:attribute name="Width"
+                     use="required"
+                     type="xsd:unsignedInt"/>
+      <xsd:attribute name="Height"
+                     use="required"
+                     type="xsd:unsignedInt"/>
+    </xsd:complexType>
+
+    <xsd:key name="ImageKeys">
+      <xsd:selector xpath="i:Image"/>
+      <xsd:field xpath="@ID"/>
+    </xsd:key>
+  </xsd:element>
+
+  <xsd:element name="Manifest">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element ref="i:Images"/>
+        <xsd:element ref="i:Objects"/>
+        <xsd:element ref="i:Metadata"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+
+</xsd:schema>
