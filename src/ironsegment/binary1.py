@@ -124,15 +124,15 @@ class FileReadableSection1Image(FileReadableSection1):
         return ImageID(unpack(">L", id_buffer)[0])
 
 
-class FileReadable:
+class FileReadable1:
     @classmethod
-    def open_file(cls, path: str) -> "FileReadable":
+    def open_file(cls, path: str) -> "FileReadable1":
         f = open(path, "rb")
         mm = mmap.mmap(fileno=f.fileno(), length=0, access=mmap.ACCESS_READ)
         cls.check_magic_number(mm)
         (version_major, version_minor) = cls.check_version(mm)
         sections = cls.enumerate_sections(mm)
-        return FileReadable(f, mm, version_major, version_minor, sections)
+        return FileReadable1(f, mm, version_major, version_minor, sections)
 
     @classmethod
     def check_version(cls, mm: mmap.mmap) -> tuple[int, int]:
@@ -194,7 +194,7 @@ class FileReadable:
         self._version_minor = version_minor
         self._sections = sections
 
-    def __enter__(self) -> "FileReadable":
+    def __enter__(self) -> "FileReadable1":
         return self
 
     def __exit__(
@@ -216,7 +216,7 @@ class FileReadable:
         return self._sections
 
 
-class ImageWritable:
+class ImageWritable1:
     def __init__(self, semantic: ImageSemantic, offset: int, size: int):
         self._semantic = semantic
         self._offset = offset
@@ -235,13 +235,13 @@ class ImageWritable:
         return self._semantic
 
 
-class FileWritable:
+class FileWritable1:
     @staticmethod
     def _aligned_size(size: int) -> int:
         return int(math.ceil(size / 16.0) * 16)
 
     @classmethod
-    def open_file(cls, path: str, manifest: Manifest) -> "FileWritable":
+    def open_file(cls, path: str, manifest: Manifest) -> "FileWritable1":
         f = open(path, "w+b")
         f.truncate(0)
         f.write(pack(">Q", FILE_MAGIC_NUMBER))
@@ -249,7 +249,7 @@ class FileWritable:
         f.write(pack(">L", 0))
 
         section_data = serialize_manifest(manifest)
-        section_size = FileWritable._aligned_size(len(section_data))
+        section_size = FileWritable1._aligned_size(len(section_data))
 
         f.write(pack(">Q", SECTION_IDENTIFIER_MANIFEST))
         f.write(pack(">Q", section_size))
@@ -257,12 +257,12 @@ class FileWritable:
         f.write(bytes(section_size - len(section_data)))
         f.flush()
 
-        writable_images: list[ImageWritable] = []
+        writable_images: list[ImageWritable1] = []
         for i in sorted(manifest.images.images):
             image = manifest.images.images[i]
             size = pixel_size_for_semantic(image.semantic)
             total_size = manifest.images.width * manifest.images.height * size
-            aligned_size = FileWritable._aligned_size(total_size)
+            aligned_size = FileWritable1._aligned_size(total_size)
             f.write(pack(">Q", SECTION_IDENTIFIER_IMAGE))
             f.write(pack(">Q", aligned_size))
             f.flush()
@@ -270,7 +270,7 @@ class FileWritable:
             for _ in range(aligned_size):
                 f.write(bytes(1))
             writable_images.append(
-                ImageWritable(
+                ImageWritable1(
                     semantic=image.semantic, offset=offset, size=total_size
                 )
             )
@@ -279,7 +279,7 @@ class FileWritable:
         f.write(pack(">Q", 0))
 
         mm = mmap.mmap(fileno=f.fileno(), length=0, access=mmap.ACCESS_WRITE)
-        return FileWritable(
+        return FileWritable1(
             file=f, mm=mm, manifest=manifest, writable_images=writable_images
         )
 
@@ -288,7 +288,7 @@ class FileWritable:
         file: IO[bytes],
         mm: mmap.mmap,
         manifest: Manifest,
-        writable_images: list[ImageWritable],
+        writable_images: list[ImageWritable1],
     ):
         self._file = file
         self._map = mm
@@ -296,10 +296,10 @@ class FileWritable:
         self._writable_images = writable_images
 
     @property
-    def writable_images(self) -> list[ImageWritable]:
+    def writable_images(self) -> list[ImageWritable1]:
         return self._writable_images
 
-    def __enter__(self) -> "FileWritable":
+    def __enter__(self) -> "FileWritable1":
         return self
 
     def __exit__(
