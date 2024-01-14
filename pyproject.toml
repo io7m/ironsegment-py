@@ -107,6 +107,8 @@ warn_unused_ignores = true
 [tool.ruff.lint.extend-per-file-ignores]
 # We set up lxml "safely"
 "src/ironsegment/xml.py" = ["S320"]
+# The file takes ownership
+"src/ironsegment/binary1.py" = ["SIM115"]
 
 #------------------------------------------------------------------------
 # Test suite.
