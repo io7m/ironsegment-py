@@ -18,7 +18,7 @@ jobs:
       - name: Show Python version
         run: python --version
       - name: Setup hatch
-        run: python -m pip install --upgrade hatch
+        run: python -m pip install --upgrade hatch setuptools
       - name: Build
         run: ./make.sh
       - name: Upload coverage to Codecov
