@@ -88,6 +88,7 @@ python = ["3.10", "3.11", "3.12"]
 [tool.hatch.envs.types]
 dependencies = [
   "mypy == 1.8.0",
+  "setuptools == 69.0.3"
 ]
 [tool.hatch.envs.types.scripts]
 check = "mypy --install-types --non-interactive {args:src/ironsegment}"
