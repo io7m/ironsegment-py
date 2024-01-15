@@ -70,7 +70,8 @@ test = "pytest {args:tests}"
 test-cov = "coverage run --data-file=.coverage -m pytest {args:tests}"
 cov-report = [
   "- coverage combine",
-  "coverage report",
+  "coverage report --data-file=.coverage",
+  "coverage xml --data-file .coverage -o coverage.xml"
 ]
 cov = [
   "test-cov",
