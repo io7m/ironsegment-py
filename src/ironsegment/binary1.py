@@ -143,9 +143,31 @@ class ImageReadable1:
     def semantic(self) -> ImageSemantic:
         return self._semantic
 
+    def get_object_id(self, x: int, y: int) -> np.uint32:
+        if x >= self._width:
+            _error = f"X component {x} >= {self._width}"
+            raise ValueError(_error)
+        if y >= self._height:
+            _error = f"Y component {y} >= {self._height}"
+            raise ValueError(_error)
+
+        if self.semantic == ImageSemantic.OBJECT_ID_32:
+            _index = (y * self._width) + x
+            return np.uint32(self._data[_index])
+
+        _error = f"Cannot fetch object IDs from image with {self.semantic}"
+        raise ValueError(_error)
+
     def get_rgb_float(
         self, x: int, y: int
     ) -> np.ndarray[Literal[3], np.dtype[np.float64]]:
+        if x >= self._width:
+            _error = f"X component {x} >= {self._width}"
+            raise ValueError(_error)
+        if y >= self._height:
+            _error = f"Y component {y} >= {self._height}"
+            raise ValueError(_error)
+
         _index: int
         match self.semantic:
             case ImageSemantic.OBJECT_ID_32:
@@ -199,6 +221,13 @@ class ImageReadable1:
     def get_rgba_float(
         self, x: int, y: int
     ) -> np.ndarray[Literal[3], np.dtype[np.float64]]:
+        if x >= self._width:
+            _error = f"X component {x} >= {self._width}"
+            raise ValueError(_error)
+        if y >= self._height:
+            _error = f"Y component {y} >= {self._height}"
+            raise ValueError(_error)
+
         _index: int
         match self.semantic:
             case ImageSemantic.OBJECT_ID_32:

@@ -16,6 +16,8 @@
 
 import os
 
+import pytest
+
 from ironsegment.binary1 import (
     FileReadable1,
     FileReadableSection1End,
@@ -54,6 +56,30 @@ class TestBinary1:
                 assert w.writable_images[0].data_offset == 1248
                 assert w.writable_images[1].data_offset == 2800
                 assert w.writable_images[2].data_offset == 3840
+
+    def test_get_rgb_float_x(self) -> None:
+        with FileReadable1.open_file(resource_file("full.isb")) as f:
+            data = f.image_data(ImageID(1))
+            with pytest.raises(ValueError, match="X component.*"):
+                data.get_rgb_float(1024, 0)
+
+    def test_get_rgb_float_y(self) -> None:
+        with FileReadable1.open_file(resource_file("full.isb")) as f:
+            data = f.image_data(ImageID(1))
+            with pytest.raises(ValueError, match="Y component.*"):
+                data.get_rgb_float(0, 1024)
+
+    def test_get_rgba_float_x(self) -> None:
+        with FileReadable1.open_file(resource_file("full.isb")) as f:
+            data = f.image_data(ImageID(1))
+            with pytest.raises(ValueError, match="X component.*"):
+                data.get_rgba_float(1024, 0)
+
+    def test_get_rgba_float_y(self) -> None:
+        with FileReadable1.open_file(resource_file("full.isb")) as f:
+            data = f.image_data(ImageID(1))
+            with pytest.raises(ValueError, match="Y component.*"):
+                data.get_rgba_float(0, 1024)
 
     def test_get_rgb_float_image1(self) -> None:
         with FileReadable1.open_file(resource_file("full.isb")) as f:
@@ -390,3 +416,15 @@ class TestBinary1:
             assert rgba[1] == 2.0 / 4294967296.0
             assert rgba[2] == 2.0 / 4294967296.0
             assert len(rgba) == 4
+
+    def test_get_object_id(self) -> None:
+        with FileReadable1.open_file(resource_file("full.isb")) as f:
+            for i in range(1, 9):
+                data = f.image_data(ImageID(i))
+                if i == 8:
+                    assert data.get_object_id(0, 0) == 0
+                    assert data.get_object_id(1, 0) == 1
+                    assert data.get_object_id(2, 0) == 2
+                else:
+                    with pytest.raises(ValueError, match="Cannot fetch ob.*"):
+                        data.get_object_id(0, 0)
