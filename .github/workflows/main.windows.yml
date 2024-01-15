@@ -13,13 +13,5 @@ jobs:
       - uses: actions/checkout@v2
       - name: Setup Python
         run: python -m pip install --upgrade hatch
-      - name: hatch run python --version
-        run: hatch run python --version
-      - name: hatch fmt
-        run: hatch fmt
-      - name: hatch run types:check
-        run: hatch run types:check
-      - name: hatch build
-        run: hatch build
-      - name: hatch run cov
-        run: hatch run cov
+      - name: Build
+        run: .\make.bat

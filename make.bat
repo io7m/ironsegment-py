@@ -1,5 +1,3 @@
-#!/bin/sh -ex
-
 python -m pip install --upgrade hatch
 
 hatch fmt
