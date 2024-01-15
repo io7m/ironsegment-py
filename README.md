@@ -1,6 +1,8 @@
 ironsegment-py
 ===
 
+[![Codecov](https://img.shields.io/codecov/c/github/io7m/ironsegment-py.svg?style=flat-square)](https://codecov.io/gh/io7m/ironsegment-py)
+
 ![com.io7m.ironsegment](./ironsegment-py.jpg?raw=true)
 
 | Platform | Python | Status |
