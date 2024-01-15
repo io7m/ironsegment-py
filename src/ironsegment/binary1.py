@@ -18,7 +18,9 @@ import math
 import mmap
 from abc import ABC, abstractmethod
 from struct import pack, unpack
-from typing import IO
+from typing import IO, Any, Literal
+
+import numpy as np
 
 from ironsegment.model import (
     ImageID,
@@ -124,6 +126,138 @@ class FileReadableSection1Image(FileReadableSection1):
         return ImageID(unpack(">L", id_buffer)[0])
 
 
+class ImageReadable1:
+    def __init__(
+        self,
+        semantic: ImageSemantic,
+        width: int,
+        height: int,
+        data: np.ndarray[Any, Any],
+    ):
+        self._width = width
+        self._height = height
+        self._semantic = semantic
+        self._data = data
+
+    @property
+    def semantic(self) -> ImageSemantic:
+        return self._semantic
+
+    def get_rgb_float(
+        self, x: int, y: int
+    ) -> np.ndarray[Literal[3], np.dtype[np.float64]]:
+        _index: int
+        match self.semantic:
+            case ImageSemantic.OBJECT_ID_32:
+                _index = (y * self._width) + x
+                _oid32: np.uint32 = self._data[_index]
+                _out = np.full(3, _oid32, dtype=np.float64)
+                return np.divide(_out, 4294967296.0)
+
+            case ImageSemantic.DEPTH_16:
+                _index = (y * self._width) + x
+                _u16: np.uint16 = self._data[_index]
+                _out = np.full(3, _u16, dtype=np.float64)
+                return np.divide(_out, 65536.0)
+
+            case ImageSemantic.DEPTH_32:
+                _index = (y * self._width) + x
+                _u32: np.uint32 = self._data[_index]
+                _out = np.full(3, _u32, dtype=np.float64)
+                return np.divide(_out, 4294967296.0)
+
+            case ImageSemantic.DENOISE_RGB8:
+                _index = (y * self._width * 3) + (x * 3)
+                _rgbu8: np.ndarray[Literal[3], np.dtype[np.uint8]]
+                _rgbu8 = self._data[_index : _index + 3]
+                return np.divide(_rgbu8, 256.0)
+
+            case ImageSemantic.DENOISE_RGBA8:
+                _index = (y * self._width * 4) + (x * 4)
+                _rgbau8: np.ndarray[Literal[3], np.dtype[np.uint8]]
+                _rgbau8 = self._data[_index : _index + 3]
+                return np.divide(_rgbau8, 256.0)
+
+            case ImageSemantic.DENOISE_RGBA16:
+                _index = (y * self._width * 4) + (x * 4)
+                _rgbau16: np.ndarray[Literal[3], np.dtype[np.uint16]]
+                _rgbau16 = self._data[_index : _index + 3]
+                return np.divide(_rgbau16, 65536.0)
+
+            case ImageSemantic.DENOISE_RGB16:
+                _index = (y * self._width * 3) + (x * 3)
+                _rgba16: np.ndarray[Literal[3], np.dtype[np.uint16]]
+                _rgba16 = self._data[_index : _index + 3]
+                return np.divide(_rgba16, 65536.0)
+
+            case ImageSemantic.MONOCHROME_LINES_8:
+                _index = (y * self._width) + x
+                _u8: np.uint8 = self._data[_index]
+                _out = np.full(3, _u8, dtype=np.float64)
+                return np.divide(_out, 256.0)
+
+    def get_rgba_float(
+        self, x: int, y: int
+    ) -> np.ndarray[Literal[3], np.dtype[np.float64]]:
+        _index: int
+        match self.semantic:
+            case ImageSemantic.OBJECT_ID_32:
+                _index = (y * self._width) + x
+                _oid32: np.uint32 = self._data[_index]
+                _out = np.full(4, _oid32, dtype=np.float64)
+                _out[3] = 4294967296
+                return np.divide(_out, 4294967296.0)
+
+            case ImageSemantic.DEPTH_16:
+                _index = (y * self._width) + x
+                _u16: np.uint16 = self._data[_index]
+                _out = np.full(4, _u16, dtype=np.float64)
+                _out[3] = 65536
+                return np.divide(_out, 65536.0)
+
+            case ImageSemantic.DEPTH_32:
+                _index = (y * self._width) + x
+                _u32: np.uint32 = self._data[_index]
+                _out = np.full(4, _u32, dtype=np.float64)
+                _out[3] = 4294967296
+                return np.divide(_out, 4294967296.0)
+
+            case ImageSemantic.DENOISE_RGB8:
+                _index = (y * self._width * 3) + (x * 3)
+                _out_rgb8: np.ndarray[Literal[4], np.dtype[np.uint8]]
+                _out_rgb8 = np.full(4, 1.0, dtype=np.float64)
+                _out_rgb8[0:3] = self._data[_index : _index + 3]
+                _out_rgb8[3] = 256.0
+                return np.divide(_out_rgb8, 256.0)
+
+            case ImageSemantic.DENOISE_RGBA8:
+                _index = (y * self._width * 4) + (x * 4)
+                _out_rgba8: np.ndarray[Literal[4], np.dtype[np.uint8]]
+                _out_rgba8 = self._data[_index : _index + 4]
+                return np.divide(_out_rgba8, 256.0)
+
+            case ImageSemantic.DENOISE_RGBA16:
+                _index = (y * self._width * 4) + (x * 4)
+                _out_rgba16: np.ndarray[Literal[4], np.dtype[np.uint16]]
+                _out_rgba16 = self._data[_index : _index + 4]
+                return np.divide(_out_rgba16, 65536.0)
+
+            case ImageSemantic.DENOISE_RGB16:
+                _index = (y * self._width * 3) + (x * 3)
+                _out_rgb16: np.ndarray[Literal[4], np.dtype[np.uint16]]
+                _out_rgb16 = np.full(4, 1.0, dtype=np.float64)
+                _out_rgb16[0:3] = self._data[_index : _index + 3]
+                _out_rgb16[3] = 65536.0
+                return np.divide(_out_rgb16, 65536.0)
+
+            case ImageSemantic.MONOCHROME_LINES_8:
+                _index = (y * self._width) + x
+                _u8: np.uint8 = self._data[_index]
+                _out_l8 = np.full(4, _u8, dtype=np.float64)
+                _out_l8[3] = 256.0
+                return np.divide(_out_l8, 256.0)
+
+
 class FileReadable1:
     @classmethod
     def open_file(cls, path: str) -> "FileReadable1":
@@ -131,8 +265,16 @@ class FileReadable1:
         mm = mmap.mmap(fileno=f.fileno(), length=0, access=mmap.ACCESS_READ)
         cls.check_magic_number(mm)
         (version_major, version_minor) = cls.check_version(mm)
-        sections = cls.enumerate_sections(mm)
-        return FileReadable1(f, mm, version_major, version_minor, sections)
+        manifest_section, sections = cls.enumerate_sections(mm)
+        manifest = manifest_section.manifest()
+        return FileReadable1(
+            file=f,
+            mm=mm,
+            version_major=version_major,
+            version_minor=version_minor,
+            manifest=manifest,
+            sections=sections,
+        )
 
     @classmethod
     def check_version(cls, mm: mmap.mmap) -> tuple[int, int]:
@@ -154,18 +296,23 @@ class FileReadable1:
             raise ValueError(_error)
 
     @classmethod
-    def enumerate_sections(cls, mm: mmap.mmap) -> list[FileReadableSection1]:
+    def enumerate_sections(
+        cls, mm: mmap.mmap
+    ) -> tuple[FileReadableSection1Manifest, list[FileReadableSection1]]:
         offset = 16
         sections: list[FileReadableSection1] = []
+        manifest_section: FileReadableSection1Manifest | None = None
+
         while True:
             section_type_buffer = mm[offset : offset + 8]
             section_size_buffer = mm[offset + 8 : offset + 16]
             section_type: int = unpack(">Q", section_type_buffer)[0]
             section_size: int = unpack(">Q", section_size_buffer)[0]
             if section_type == SECTION_IDENTIFIER_MANIFEST:
-                sections.append(
-                    FileReadableSection1Manifest(mm, offset, section_size)
+                manifest_section = FileReadableSection1Manifest(
+                    mm, offset, section_size
                 )
+                sections.append(manifest_section)
             elif section_type == SECTION_IDENTIFIER_IMAGE:
                 sections.append(
                     FileReadableSection1Image(mm, offset, section_size)
@@ -178,7 +325,11 @@ class FileReadable1:
             offset = offset + 16
             offset = offset + section_size
 
-        return sections
+        if not manifest_section:
+            _error = "File is missing a manifest section."
+            raise ValueError(_error)
+
+        return manifest_section, sections
 
     def __init__(
         self,
@@ -186,12 +337,14 @@ class FileReadable1:
         mm: mmap.mmap,
         version_major: int,
         version_minor: int,
+        manifest: Manifest,
         sections: list[FileReadableSection1],
     ):
         self._file = file
         self._map = mm
         self._version_major = version_major
         self._version_minor = version_minor
+        self._manifest = manifest
         self._sections = sections
 
     def __enter__(self) -> "FileReadable1":
@@ -214,6 +367,97 @@ class FileReadable1:
     @property
     def sections(self) -> list[FileReadableSection1]:
         return self._sections
+
+    def image_section(self, image_id: ImageID) -> FileReadableSection1Image:
+        for section in self._sections:
+            if (
+                isinstance(section, FileReadableSection1Image)
+                and section.image_id().value == image_id.value
+            ):
+                return section
+
+        _error = "No such image section"
+        raise ValueError(_error)
+
+    def image_data(self, image_id: ImageID) -> ImageReadable1:
+        section = self.image_section(image_id)
+        semantic = self._manifest.images.images[image_id.value].semantic
+        a_start = section.data_offset + 4
+        a_end = a_start + section.size
+
+        match semantic:
+            case ImageSemantic.OBJECT_ID_32:
+                return ImageReadable1(
+                    semantic=semantic,
+                    width=self._manifest.images.width,
+                    height=self._manifest.images.height,
+                    data=np.frombuffer(
+                        buffer=self._map[a_start:a_end], dtype=np.dtype(">u4")
+                    ),
+                )
+            case ImageSemantic.DEPTH_16:
+                return ImageReadable1(
+                    semantic=semantic,
+                    width=self._manifest.images.width,
+                    height=self._manifest.images.height,
+                    data=np.frombuffer(
+                        buffer=self._map[a_start:a_end], dtype=np.dtype(">u2")
+                    ),
+                )
+            case ImageSemantic.DEPTH_32:
+                return ImageReadable1(
+                    semantic=semantic,
+                    width=self._manifest.images.width,
+                    height=self._manifest.images.height,
+                    data=np.frombuffer(
+                        buffer=self._map[a_start:a_end], dtype=np.dtype(">u4")
+                    ),
+                )
+            case ImageSemantic.DENOISE_RGB8:
+                return ImageReadable1(
+                    semantic=semantic,
+                    width=self._manifest.images.width,
+                    height=self._manifest.images.height,
+                    data=np.frombuffer(
+                        buffer=self._map[a_start:a_end], dtype=np.dtype("B")
+                    ),
+                )
+            case ImageSemantic.DENOISE_RGBA8:
+                return ImageReadable1(
+                    semantic=semantic,
+                    width=self._manifest.images.width,
+                    height=self._manifest.images.height,
+                    data=np.frombuffer(
+                        buffer=self._map[a_start:a_end], dtype=np.dtype("B")
+                    ),
+                )
+            case ImageSemantic.DENOISE_RGBA16:
+                return ImageReadable1(
+                    semantic=semantic,
+                    width=self._manifest.images.width,
+                    height=self._manifest.images.height,
+                    data=np.frombuffer(
+                        buffer=self._map[a_start:a_end], dtype=np.dtype(">u2")
+                    ),
+                )
+            case ImageSemantic.DENOISE_RGB16:
+                return ImageReadable1(
+                    semantic=semantic,
+                    width=self._manifest.images.width,
+                    height=self._manifest.images.height,
+                    data=np.frombuffer(
+                        buffer=self._map[a_start:a_end], dtype=np.dtype(">u2")
+                    ),
+                )
+            case ImageSemantic.MONOCHROME_LINES_8:
+                return ImageReadable1(
+                    semantic=semantic,
+                    width=self._manifest.images.width,
+                    height=self._manifest.images.height,
+                    data=np.frombuffer(
+                        buffer=self._map[a_start:a_end], dtype=np.dtype("B")
+                    ),
+                )
 
 
 class ImageWritable1:

@@ -23,7 +23,7 @@ from ironsegment.binary1 import (
     FileReadableSection1Manifest,
     FileWritable1,
 )
-from ironsegment.model import Manifest
+from ironsegment.model import ImageID, Manifest
 
 
 def resource_file(name: str) -> str:
@@ -54,3 +54,339 @@ class TestBinary1:
                 assert w.writable_images[0].data_offset == 1248
                 assert w.writable_images[1].data_offset == 2800
                 assert w.writable_images[2].data_offset == 3840
+
+    def test_get_rgb_float_image1(self) -> None:
+        with FileReadable1.open_file(resource_file("full.isb")) as f:
+            data = f.image_data(ImageID(1))
+            rgb = data.get_rgb_float(0, 0)
+            assert rgb[0] == 0.00000000
+            assert rgb[1] == 1.0 / 65536.0
+            assert rgb[2] == 2.0 / 65536.0
+            assert len(rgb) == 3
+
+            rgb = data.get_rgb_float(1, 0)
+            assert rgb[0] == 1.0 / 65536.0
+            assert rgb[1] == 2.0 / 65536.0
+            assert rgb[2] == 3.0 / 65536.0
+            assert len(rgb) == 3
+
+            rgb = data.get_rgb_float(2, 0)
+            assert rgb[0] == 2.0 / 65536.0
+            assert rgb[1] == 3.0 / 65536.0
+            assert rgb[2] == 4.0 / 65536.0
+            assert len(rgb) == 3
+
+    def test_get_rgb_float_image2(self) -> None:
+        with FileReadable1.open_file(resource_file("full.isb")) as f:
+            data = f.image_data(ImageID(2))
+            rgb = data.get_rgb_float(0, 0)
+            assert rgb[0] == 0.00000000
+            assert rgb[1] == 1.0 / 256.0
+            assert rgb[2] == 2.0 / 256.0
+            assert len(rgb) == 3
+
+            rgb = data.get_rgb_float(1, 0)
+            assert rgb[0] == 1.0 / 256.0
+            assert rgb[1] == 2.0 / 256.0
+            assert rgb[2] == 3.0 / 256.0
+            assert len(rgb) == 3
+
+            rgb = data.get_rgb_float(2, 0)
+            assert rgb[0] == 2.0 / 256.0
+            assert rgb[1] == 3.0 / 256.0
+            assert rgb[2] == 4.0 / 256.0
+            assert len(rgb) == 3
+
+    def test_get_rgb_float_image3(self) -> None:
+        with FileReadable1.open_file(resource_file("full.isb")) as f:
+            data = f.image_data(ImageID(3))
+            rgb = data.get_rgb_float(0, 0)
+            assert rgb[0] == 0.00000000
+            assert rgb[1] == 1.0 / 65536.0
+            assert rgb[2] == 2.0 / 65536.0
+            assert len(rgb) == 3
+
+            rgb = data.get_rgb_float(1, 0)
+            assert rgb[0] == 1.0 / 65536.0
+            assert rgb[1] == 2.0 / 65536.0
+            assert rgb[2] == 3.0 / 65536.0
+            assert len(rgb) == 3
+
+            rgb = data.get_rgb_float(2, 0)
+            assert rgb[0] == 2.0 / 65536.0
+            assert rgb[1] == 3.0 / 65536.0
+            assert rgb[2] == 4.0 / 65536.0
+            assert len(rgb) == 3
+
+    def test_get_rgb_float_image4(self) -> None:
+        with FileReadable1.open_file(resource_file("full.isb")) as f:
+            data = f.image_data(ImageID(4))
+            rgb = data.get_rgb_float(0, 0)
+            assert rgb[0] == 0.00000000
+            assert rgb[1] == 1.0 / 256.0
+            assert rgb[2] == 2.0 / 256.0
+            assert len(rgb) == 3
+
+            rgb = data.get_rgb_float(1, 0)
+            assert rgb[0] == 1.0 / 256.0
+            assert rgb[1] == 2.0 / 256.0
+            assert rgb[2] == 3.0 / 256.0
+            assert len(rgb) == 3
+
+            rgb = data.get_rgb_float(2, 0)
+            assert rgb[0] == 2.0 / 256.0
+            assert rgb[1] == 3.0 / 256.0
+            assert rgb[2] == 4.0 / 256.0
+            assert len(rgb) == 3
+
+    def test_get_rgb_float_image5(self) -> None:
+        with FileReadable1.open_file(resource_file("full.isb")) as f:
+            data = f.image_data(ImageID(5))
+            rgb = data.get_rgb_float(0, 0)
+            assert rgb[0] == 0.00000000
+            assert rgb[1] == 0.00000000
+            assert rgb[2] == 0.00000000
+            assert len(rgb) == 3
+
+            rgb = data.get_rgb_float(1, 0)
+            assert rgb[0] == 1.0 / 65536.0
+            assert rgb[1] == 1.0 / 65536.0
+            assert rgb[2] == 1.0 / 65536.0
+            assert len(rgb) == 3
+
+            rgb = data.get_rgb_float(2, 0)
+            assert rgb[0] == 2.0 / 65536.0
+            assert rgb[1] == 2.0 / 65536.0
+            assert rgb[2] == 2.0 / 65536.0
+            assert len(rgb) == 3
+
+    def test_get_rgb_float_image6(self) -> None:
+        with FileReadable1.open_file(resource_file("full.isb")) as f:
+            data = f.image_data(ImageID(6))
+            rgb = data.get_rgb_float(0, 0)
+            assert rgb[0] == 0.00000000
+            assert rgb[1] == 0.00000000
+            assert rgb[2] == 0.00000000
+            assert len(rgb) == 3
+
+            rgb = data.get_rgb_float(1, 0)
+            assert rgb[0] == 1.0 / 4294967296.0
+            assert rgb[1] == 1.0 / 4294967296.0
+            assert rgb[2] == 1.0 / 4294967296.0
+            assert len(rgb) == 3
+
+            rgb = data.get_rgb_float(2, 0)
+            assert rgb[0] == 2.0 / 4294967296.0
+            assert rgb[1] == 2.0 / 4294967296.0
+            assert rgb[2] == 2.0 / 4294967296.0
+            assert len(rgb) == 3
+
+    def test_get_rgb_float_image7(self) -> None:
+        with FileReadable1.open_file(resource_file("full.isb")) as f:
+            data = f.image_data(ImageID(7))
+            rgb = data.get_rgb_float(0, 0)
+            assert rgb[0] == 0.00000000
+            assert rgb[1] == 0.00000000
+            assert rgb[2] == 0.00000000
+            assert len(rgb) == 3
+
+            rgb = data.get_rgb_float(1, 0)
+            assert rgb[0] == 1.0 / 256.0
+            assert rgb[1] == 1.0 / 256.0
+            assert rgb[2] == 1.0 / 256.0
+            assert len(rgb) == 3
+
+            rgb = data.get_rgb_float(2, 0)
+            assert rgb[0] == 2.0 / 256.0
+            assert rgb[1] == 2.0 / 256.0
+            assert rgb[2] == 2.0 / 256.0
+            assert len(rgb) == 3
+
+    def test_get_rgb_float_image8(self) -> None:
+        with FileReadable1.open_file(resource_file("full.isb")) as f:
+            data = f.image_data(ImageID(8))
+            rgb = data.get_rgb_float(0, 0)
+            assert rgb[0] == 0.00000000
+            assert rgb[1] == 0.00000000
+            assert rgb[2] == 0.00000000
+            assert len(rgb) == 3
+
+            rgb = data.get_rgb_float(1, 0)
+            assert rgb[0] == 1.0 / 4294967296.0
+            assert rgb[1] == 1.0 / 4294967296.0
+            assert rgb[2] == 1.0 / 4294967296.0
+            assert len(rgb) == 3
+
+            rgb = data.get_rgb_float(2, 0)
+            assert rgb[0] == 2.0 / 4294967296.0
+            assert rgb[1] == 2.0 / 4294967296.0
+            assert rgb[2] == 2.0 / 4294967296.0
+            assert len(rgb) == 3
+
+    def test_get_rgba_float_image1(self) -> None:
+        with FileReadable1.open_file(resource_file("full.isb")) as f:
+            data = f.image_data(ImageID(1))
+            rgba = data.get_rgba_float(0, 0)
+            assert rgba[0] == 0.00000000
+            assert rgba[1] == 1.0 / 65536.0
+            assert rgba[2] == 2.0 / 65536.0
+            assert len(rgba) == 4
+
+            rgba = data.get_rgba_float(1, 0)
+            assert rgba[0] == 1.0 / 65536.0
+            assert rgba[1] == 2.0 / 65536.0
+            assert rgba[2] == 3.0 / 65536.0
+            assert len(rgba) == 4
+
+            rgba = data.get_rgba_float(2, 0)
+            assert rgba[0] == 2.0 / 65536.0
+            assert rgba[1] == 3.0 / 65536.0
+            assert rgba[2] == 4.0 / 65536.0
+            assert len(rgba) == 4
+
+    def test_get_rgba_float_image2(self) -> None:
+        with FileReadable1.open_file(resource_file("full.isb")) as f:
+            data = f.image_data(ImageID(2))
+            rgba = data.get_rgba_float(0, 0)
+            assert rgba[0] == 0.00000000
+            assert rgba[1] == 1.0 / 256.0
+            assert rgba[2] == 2.0 / 256.0
+            assert len(rgba) == 4
+
+            rgba = data.get_rgba_float(1, 0)
+            assert rgba[0] == 1.0 / 256.0
+            assert rgba[1] == 2.0 / 256.0
+            assert rgba[2] == 3.0 / 256.0
+            assert len(rgba) == 4
+
+            rgba = data.get_rgba_float(2, 0)
+            assert rgba[0] == 2.0 / 256.0
+            assert rgba[1] == 3.0 / 256.0
+            assert rgba[2] == 4.0 / 256.0
+            assert len(rgba) == 4
+
+    def test_get_rgba_float_image3(self) -> None:
+        with FileReadable1.open_file(resource_file("full.isb")) as f:
+            data = f.image_data(ImageID(3))
+            rgba = data.get_rgba_float(0, 0)
+            assert rgba[0] == 0.00000000
+            assert rgba[1] == 1.0 / 65536.0
+            assert rgba[2] == 2.0 / 65536.0
+            assert len(rgba) == 4
+
+            rgba = data.get_rgba_float(1, 0)
+            assert rgba[0] == 1.0 / 65536.0
+            assert rgba[1] == 2.0 / 65536.0
+            assert rgba[2] == 3.0 / 65536.0
+            assert len(rgba) == 4
+
+            rgba = data.get_rgba_float(2, 0)
+            assert rgba[0] == 2.0 / 65536.0
+            assert rgba[1] == 3.0 / 65536.0
+            assert rgba[2] == 4.0 / 65536.0
+            assert len(rgba) == 4
+
+    def test_get_rgba_float_image4(self) -> None:
+        with FileReadable1.open_file(resource_file("full.isb")) as f:
+            data = f.image_data(ImageID(4))
+            rgba = data.get_rgba_float(0, 0)
+            assert rgba[0] == 0.00000000
+            assert rgba[1] == 1.0 / 256.0
+            assert rgba[2] == 2.0 / 256.0
+            assert len(rgba) == 4
+
+            rgba = data.get_rgba_float(1, 0)
+            assert rgba[0] == 1.0 / 256.0
+            assert rgba[1] == 2.0 / 256.0
+            assert rgba[2] == 3.0 / 256.0
+            assert len(rgba) == 4
+
+            rgba = data.get_rgba_float(2, 0)
+            assert rgba[0] == 2.0 / 256.0
+            assert rgba[1] == 3.0 / 256.0
+            assert rgba[2] == 4.0 / 256.0
+            assert len(rgba) == 4
+
+    def test_get_rgba_float_image5(self) -> None:
+        with FileReadable1.open_file(resource_file("full.isb")) as f:
+            data = f.image_data(ImageID(5))
+            rgba = data.get_rgba_float(0, 0)
+            assert rgba[0] == 0.00000000
+            assert rgba[1] == 0.00000000
+            assert rgba[2] == 0.00000000
+            assert len(rgba) == 4
+
+            rgba = data.get_rgba_float(1, 0)
+            assert rgba[0] == 1.0 / 65536.0
+            assert rgba[1] == 1.0 / 65536.0
+            assert rgba[2] == 1.0 / 65536.0
+            assert len(rgba) == 4
+
+            rgba = data.get_rgba_float(2, 0)
+            assert rgba[0] == 2.0 / 65536.0
+            assert rgba[1] == 2.0 / 65536.0
+            assert rgba[2] == 2.0 / 65536.0
+            assert len(rgba) == 4
+
+    def test_get_rgba_float_image6(self) -> None:
+        with FileReadable1.open_file(resource_file("full.isb")) as f:
+            data = f.image_data(ImageID(6))
+            rgba = data.get_rgba_float(0, 0)
+            assert rgba[0] == 0.00000000
+            assert rgba[1] == 0.00000000
+            assert rgba[2] == 0.00000000
+            assert len(rgba) == 4
+
+            rgba = data.get_rgba_float(1, 0)
+            assert rgba[0] == 1.0 / 4294967296.0
+            assert rgba[1] == 1.0 / 4294967296.0
+            assert rgba[2] == 1.0 / 4294967296.0
+            assert len(rgba) == 4
+
+            rgba = data.get_rgba_float(2, 0)
+            assert rgba[0] == 2.0 / 4294967296.0
+            assert rgba[1] == 2.0 / 4294967296.0
+            assert rgba[2] == 2.0 / 4294967296.0
+            assert len(rgba) == 4
+
+    def test_get_rgba_float_image7(self) -> None:
+        with FileReadable1.open_file(resource_file("full.isb")) as f:
+            data = f.image_data(ImageID(7))
+            rgba = data.get_rgba_float(0, 0)
+            assert rgba[0] == 0.00000000
+            assert rgba[1] == 0.00000000
+            assert rgba[2] == 0.00000000
+            assert len(rgba) == 4
+
+            rgba = data.get_rgba_float(1, 0)
+            assert rgba[0] == 1.0 / 256.0
+            assert rgba[1] == 1.0 / 256.0
+            assert rgba[2] == 1.0 / 256.0
+            assert len(rgba) == 4
+
+            rgba = data.get_rgba_float(2, 0)
+            assert rgba[0] == 2.0 / 256.0
+            assert rgba[1] == 2.0 / 256.0
+            assert rgba[2] == 2.0 / 256.0
+            assert len(rgba) == 4
+
+    def test_get_rgba_float_image8(self) -> None:
+        with FileReadable1.open_file(resource_file("full.isb")) as f:
+            data = f.image_data(ImageID(8))
+            rgba = data.get_rgba_float(0, 0)
+            assert rgba[0] == 0.00000000
+            assert rgba[1] == 0.00000000
+            assert rgba[2] == 0.00000000
+            assert len(rgba) == 4
+
+            rgba = data.get_rgba_float(1, 0)
+            assert rgba[0] == 1.0 / 4294967296.0
+            assert rgba[1] == 1.0 / 4294967296.0
+            assert rgba[2] == 1.0 / 4294967296.0
+            assert len(rgba) == 4
+
+            rgba = data.get_rgba_float(2, 0)
+            assert rgba[0] == 2.0 / 4294967296.0
+            assert rgba[1] == 2.0 / 4294967296.0
+            assert rgba[2] == 2.0 / 4294967296.0
+            assert len(rgba) == 4

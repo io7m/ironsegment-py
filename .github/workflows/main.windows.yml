@@ -19,5 +19,5 @@ jobs:
         run: hatch run types:check
       - name: hatch build
         run: hatch build
-      - name: hatch run test
-        run: hatch run test
+      - name: hatch run cov
+        run: hatch run cov

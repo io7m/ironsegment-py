@@ -3,5 +3,5 @@
 hatch fmt
 hatch run types:check
 hatch build
-hatch run test
+hatch run cov
 

@@ -1,6 +1,8 @@
 *.iml
+.coverage
 .idea
+.run
+__pycache__
 dist
 pom.xml.versionsBackup
 target
-__pycache__

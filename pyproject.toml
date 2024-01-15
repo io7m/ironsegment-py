@@ -43,7 +43,8 @@ classifiers = [
   "Programming Language :: Python :: Implementation :: PyPy",
 ]
 dependencies = [
-  "lxml==5.1.0"
+  "lxml==5.1.0",
+  "numpy==1.23.5"
 ]
 
 [project.urls]
