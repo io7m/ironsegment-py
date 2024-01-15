@@ -109,7 +109,8 @@ warn_unused_ignores = true
 
 [tool.hatch.envs.hatch-static-analysis]
 dependencies = [
-  "setuptools == 69.0.3"
+  "setuptools == 69.0.3",
+  "ruff == 0.1.13"
 ]
 
 [tool.ruff.lint.extend-per-file-ignores]
