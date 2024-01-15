@@ -87,6 +87,7 @@ python = ["3.10", "3.11", "3.12"]
 
 [tool.hatch.envs.types]
 dependencies = [
+  "setuptools == 69.0.3",
   "mypy == 1.8.0"
 ]
 
