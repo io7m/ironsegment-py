@@ -107,6 +107,11 @@ warn_unused_ignores = true
 # Static analysis.
 #
 
+[tool.hatch.envs.hatch-static-analysis]
+dependencies = [
+  "setuptools == 69.0.3"
+]
+
 [tool.ruff.lint.extend-per-file-ignores]
 # We set up lxml "safely"
 "src/ironsegment/xml.py" = ["S320"]
