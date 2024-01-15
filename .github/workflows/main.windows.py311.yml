@@ -1,0 +1,25 @@
+name: main.windows.py311
+
+on:
+  push:
+    branches: [ develop, feature/*, release/* ]
+  pull_request:
+    branches: [ develop ]
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.11"
+      - name: Show Python version
+        run: python --version
+      - name: Setup hatch
+        run: python -m pip install --upgrade hatch
+      - name: Build
+        run: .\make.bat
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v3
